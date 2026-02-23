@@ -10,6 +10,6 @@ phases:
 
   build:
     commands:
-      - cd infra
+      - cd hello-gkc/infra
       - terraform init
       - terraform apply -auto-approve
