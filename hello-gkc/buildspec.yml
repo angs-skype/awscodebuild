@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    AWS_REGION: ap-south-1
+    AWS_REGION: us-east-1
     ECR_REPO: spring-demo
     CLUSTER_NAME: my-eks-cluster
 
