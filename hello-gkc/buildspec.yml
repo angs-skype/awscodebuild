@@ -12,32 +12,37 @@ phases:
       java: corretto17
     commands:
       - echo Installing kubectl
-      - curl -o kubectl https://s3.us-east-1.amazonaws.com/amazon-eks/1.29.0/2024-01-04/bin/linux/amd64/kubectl
+      - curl -LO "https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
+      - kubectl version --client
 
   pre_build:
     commands:
-      - echo Logging in to ECR
+      - echo Getting AWS account ID
       - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 
-      - echo Login to ECR
+      - echo Logging in to ECR
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
-      - echo Ensure ECR repository exists
+      - echo Ensuring ECR repository exists
       - aws ecr describe-repositories --repository-names $ECR_REPO --region $AWS_REGION || aws ecr create-repository --repository-name $ECR_REPO --region $AWS_REGION
 
   build:
     commands:
-      - echo Build Spring Boot
+      - echo Build Spring Boot app
       - cd hello-gkc
       - mvn clean package
+
+      - echo Build Docker image
       - docker build -t $ECR_REPO .
+
+      - echo Tag Docker image
       - docker tag $ECR_REPO:latest $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
 
   post_build:
     commands:
-      - echo Pushing Docker image
+      - echo Pushing Docker image to ECR
       - docker push $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
 
       - echo Updating kubeconfig
