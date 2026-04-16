@@ -17,11 +17,18 @@ phases:
       - mv kubectl /usr/local/bin/
 
   pre_build:
-    commands:
-      - echo Logging in to ECR
-      - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-      - aws ecr get-login-password --region $AWS_REGION |
-        docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+  commands:
+    - echo Logging in to ECR
+    - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+    - |
+      aws ecr get-login-password --region $AWS_REGION \
+      | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+    - echo Ensure repository exists
+    - |
+      aws ecr describe-repositories --repository-names $ECR_REPO --region $AWS_REGION \
+      || aws ecr create-repository --repository-name $ECR_REPO --region $AWS_REGION
 
   build:
     commands:
