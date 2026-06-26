@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: spring-demo
-          image: 281934899210.dkr.ecr.us-east-1.amazonaws.com/spring-demo:latest
+          image: 5467893451.dkr.ecr.us-east-1.amazonaws.com/spring-demo:latest
           ports:
             - containerPort: 8080
