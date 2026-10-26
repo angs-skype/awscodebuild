@@ -1,0 +1,6 @@
+docker compose down
+docker compose up -d
+1. Open your Grafana tab in Codespaces.
+2. Go back to your Prometheus Data Source configuration.
+3. Change the Connection URL to: http://127.0.0.1:9090 (instead of http://prometheus:9090).
+4. Click Save & test. It will connect instantly.
